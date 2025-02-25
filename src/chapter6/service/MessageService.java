@@ -78,8 +78,38 @@ public class MessageService {
     	     * idがnullだったら全件取得する・idがnull以外だったら、その値に対応するユーザーIDの投稿を取得する*/
     		List<UserMessage> messages = new UserMessageDao().select(connection, id, LIMIT_NUM);
     		commit(connection);
-
     		return messages;
+
+    	} catch (RuntimeException e) {
+    		rollback(connection);
+    		log.log(Level.SEVERE, new Object(){}.getClass().getEnclosingClass().getName() + " : " + e.toString(), e);
+    		throw e;
+    	} catch (Error e) {
+    		rollback(connection);
+    		log.log(Level.SEVERE, new Object(){}.getClass().getEnclosingClass().getName() + " : " + e.toString(), e);
+    		throw e;
+    	} finally {
+    		close(connection);
+    	}
+    }
+
+    /*■つぶやきの削除■　deleteMessageServletから呼び出される*/
+    public void delete(String messageId) {
+
+    	log.info(new Object(){}.getClass().getEnclosingClass().getName() +
+    			" : " + new Object(){}.getClass().getEnclosingMethod().getName());
+
+    	Connection connection = null;
+    	try {
+    		/*接続情報（connection）を用意 - DBに接続できるようになる*/
+    		connection = getConnection();
+
+    		/*Dao呼び出し*/
+    		new MessageDao().delete(connection, Integer.parseInt(messageId));
+
+    		/*DBの操作を確定(commit;)*/
+    		commit(connection);
+
     	} catch (RuntimeException e) {
     		rollback(connection);
     		log.log(Level.SEVERE, new Object(){}.getClass().getEnclosingClass().getName() + " : " + e.toString(), e);

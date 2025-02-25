@@ -54,7 +54,7 @@ public class MessageDao {
             ps.setInt(1, message.getUserId());
             ps.setString(2, message.getText());
 
-            /*SELECT命令を実行*/
+            /*UPDATE命令を実行*/
             ps.executeUpdate();
         } catch (SQLException e) {
 		log.log(Level.SEVERE, new Object(){}.getClass().getEnclosingClass().getName() + " : " + e.toString(), e);
@@ -62,5 +62,30 @@ public class MessageDao {
         } finally {
             close(ps);
         }
+    }
+
+    public void delete(Connection connection, Integer id) {
+
+    	log.info(new Object(){}.getClass().getEnclosingClass().getName() +
+    			" : " + new Object(){}.getClass().getEnclosingMethod().getName());
+
+    	//プリコンパイルされた SQL文を表すオブジェクト,
+    	PreparedStatement ps = null;
+    	try {
+
+    		String sql = "DELETE FROM messages WHERE id = ?";
+    		ps = connection.prepareStatement(sql);
+
+            ps.setInt(1, id);
+
+    		/*UPDATE命令を実行*/
+    		ps.executeUpdate();
+
+    	}catch (SQLException e) {
+    		log.log(Level.SEVERE, new Object(){}.getClass().getEnclosingClass().getName() + " : " + e.toString(), e);
+    		throw new SQLRuntimeException(e);
+    	} finally {
+    		close(ps);
+    	}
     }
 }

@@ -77,6 +77,12 @@
 						<fmt:formatDate value="${message.createdDate}"
 							pattern="yyyy/MM/dd HH:mm:ss" />
 					</div>
+					<!-- action属性でURL:deleteMessageを指定・id="deleteMessage"は一旦消し-->
+					<form action="deleteMessage" method="post">
+						<!-- name&value…キー & バリューの関係。name:user.id としてサーバーにリクエストされる ・onClick="return Check()"は一旦消し-->
+						<input name="messageId" value="${message.id}" type="hidden" />
+						<input type="submit" value="削除">
+					</form>
 				</div>
 			</c:forEach>
 		</div>

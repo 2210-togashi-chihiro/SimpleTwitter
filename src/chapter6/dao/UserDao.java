@@ -149,7 +149,7 @@ public class UserDao {
             close(ps);
         }
     }
-
+    /*■ResultSet型をList<User>にして返すメソッド■*/
     private List<User> toUsers(ResultSet rs) throws SQLException {
 
 	  log.info(new Object(){}.getClass().getEnclosingClass().getName() +
@@ -190,6 +190,7 @@ public class UserDao {
 
             ps.setInt(1, id);
 
+            /*SELECT命令を実行*/
             ResultSet rs = ps.executeQuery();
 
             List<User> users = toUsers(rs);
@@ -242,7 +243,7 @@ public class UserDao {
             	ps.setString(4, user.getDescription());
             	ps.setInt(5, user.getId());
             }
-
+            /*UPDATE命令を実行*/
             int count = ps.executeUpdate();
             if (count == 0) {
         		log.log(Level.SEVERE,"更新対象のレコードが存在しません", new NoRowsUpdatedRuntimeException());
