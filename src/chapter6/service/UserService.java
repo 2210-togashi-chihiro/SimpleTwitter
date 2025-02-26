@@ -152,12 +152,12 @@ public class UserService {
          *・isBlank()：nullと""、" "（半角スペース）の全てにtrueを返す*/
         try {
         	if(!StringUtils.isBlank(user.getPassword())) {
-	            // パスワード暗号化
-	            String encPassword = CipherUtil.encrypt(user.getPassword());
-	            user.setPassword(encPassword);
+        		// パスワード暗号化
+        		String encPassword = CipherUtil.encrypt(user.getPassword());
+        		user.setPassword(encPassword);
         	}
-            connection = getConnection();
-            new UserDao().update(connection, user);
+        	connection = getConnection();
+        	new UserDao().update(connection, user);
             commit(connection);
         } catch (RuntimeException e) {
             rollback(connection);
