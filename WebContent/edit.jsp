@@ -11,44 +11,60 @@
 <link href="./css/style.css" rel="stylesheet" type="text/css">
 </head>
 <body>
-	<div class="header"></div>
-	<c:if test="${ not empty loginUser }">
-		<a href="./">ホーム</a>
-		<a href="setting">設定</a>
-		<a href="logout">ログアウト</a>
-
-		<div class="profile">
-			<div class="name">
-				<h2>
-					<c:out value="${loginUser.name}" />
-				</h2>
-			</div>
-			<div class="account">
-				@
-				<c:out value="${loginUser.account}" />
-			</div>
-			<div class="description">
-				<c:out value="${loginUser.description}" />
-			</div>
+	<div class="main-contents">
+		<div class="header">
+			<c:if test="${empty loginUser}">
+				<a href="login">ログイン</a>
+				<a href="signup">登録する</a>
+			</c:if>
+			<c:if test="${not empty loginUser}">
+				<a href="./">ホーム</a>
+				<a href="setting">設定</a>
+				<a href="logout">ログアウト</a>
+			</c:if>
 		</div>
-		<c:if test="${ not empty errorMessages }">
+		<c:if test="${not empty loginUser}">
+			<div class="profile">
+				<div class="name">
+					<h2>
+						<c:out value="${loginUser.name}" />
+					</h2>
+				</div>
+				<div class="account">
+					@
+					<c:out value="${loginUser.account}" />
+				</div>
+				<div class="email">
+					<c:out value="${loginUser.email}" />
+				</div>
+				<div class="description">
+					<c:out value="${loginUser.description}" />
+				</div>
+			</div>
+		</c:if>
+
+		<c:if test="${not empty errorMessages}">
 			<div class="errorMessages">
 				<ul>
 					<c:forEach items="${errorMessages}" var="errorMessage">
-						<li><c:out value="${errorMessage}" />
+						<li><c:out value="${errorMessage}" /></li>
 					</c:forEach>
 				</ul>
 			</div>
 			<c:remove var="errorMessages" scope="session" />
 		</c:if>
-		<form action="edit" method="post">
-			<input name="id" value="${message.id}" id="id" type="hidden" />
-			<textarea name="text" cols="100" rows="5" id="text">
-				<c:out value="${message.text}" />
-			</textarea>
-			<br /> <input type="submit" value="更新">（140文字まで）
-		</form>
-	</c:if>
+
+		<div class="form-area">
+			<form action="edit.jsp" method="post">
+				<input type="hidden" name="messageId" value="${message.id}">
+				<textarea name="text" cols="100" rows="5" class="tweet-box"><c:out value="${message.text}" /></textarea>
+				<br /> <input type="submit" value="更新">(140文字まで)
+			</form>
+		</div>
+
+		<a href="./">戻る</a>
+	</div>
+
 	<div class="copyright">Copyright(c)chogashi</div>
 </body>
 </html>

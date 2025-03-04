@@ -40,9 +40,15 @@ public class MessageService {
 
         Connection connection = null;
         try {
+    		/*接続情報（connection）を用意 - DBに接続できるようになる*/
             connection = getConnection();
+
+    		/*Dao呼び出し*/
             new MessageDao().insert(connection, message);
+
+    		/*DBの操作を確定(commit;)*/
             commit(connection);
+
         } catch (RuntimeException e) {
             rollback(connection);
 		log.log(Level.SEVERE, new Object(){}.getClass().getEnclosingClass().getName() + " : " + e.toString(), e);
@@ -66,6 +72,7 @@ public class MessageService {
 
     	Connection connection = null;
     	try {
+    		/*接続情報（connection）を用意*/
     		connection = getConnection();
 
     	    /*idをnullで初期化 - userIdの値が渡ってきていたら整数型に型変換、idに代入*/
@@ -74,8 +81,8 @@ public class MessageService {
     	        id = Integer.parseInt(userId);
     	    }
 
-    	    /* ■messageDao.selectに引数としてInteger型のidを追加■
-    	     * idがnullだったら全件取得する・idがnull以外だったら、その値に対応するユーザーIDの投稿を取得する*/
+    		/* Dao呼び出し
+    	     * 検索結果：idがnull…全件取得　　idがnull以外…その値に対応するユーザーIDの投稿を取得*/
     		List<UserMessage> messages = new UserMessageDao().select(connection, id, LIMIT_NUM);
     		commit(connection);
     		return messages;
@@ -123,21 +130,24 @@ public class MessageService {
     	}
     }
 
-    /*■つぶやきの削除■　deleteMessageServletから呼び出される*/
-    public Message Select(String messageId) {
+    /*■つぶやきの編集を表示■　EditServletから呼び出される*/
+    public Message select(int messageId) {
 
     	log.info(new Object(){}.getClass().getEnclosingClass().getName() +
     			" : " + new Object(){}.getClass().getEnclosingMethod().getName());
 
     	Connection connection = null;
     	try {
+    		/*接続情報（connection）を用意*/
     		connection = getConnection();
-    		Integer id = Integer.parseInt(messageId);
 
-    	    /* ■messageDao.selectに引数としてInteger型のidを追加■
-    	     * idがnullだったら全件取得する・idがnull以外だったら、その値に対応するユーザーIDの投稿を取得する*/
-    		Message messages = new MessageDao().select(connection, id);
+    		/*Dao呼び出し*/
+    		Message messages = new MessageDao().select(connection, messageId);
+
+    		/*DBの操作を確定(commit;)*/
     		commit(connection);
+
+    		/*取得結果をServletへ返却*/
     		return messages;
 
     	} catch (RuntimeException e) {
@@ -153,4 +163,36 @@ public class MessageService {
     	}
 
     }
+
+    /*■つぶやきを編集(更新)■　EditServletから呼び出される*/
+    public void update(Message message) {
+
+    	log.info(new Object(){}.getClass().getEnclosingClass().getName() +
+    			" : " + new Object(){}.getClass().getEnclosingMethod().getName());
+
+    	Connection connection = null;
+    	try {
+    		/*接続情報（connection）を用意*/
+    		connection = getConnection();
+
+    		/*Dao呼び出し*/
+    		new MessageDao().update(connection, message);
+
+    		/*DBの操作を確定(commit;)*/
+    		commit(connection);
+
+    	} catch (RuntimeException e) {
+    		rollback(connection);
+    		log.log(Level.SEVERE, new Object(){}.getClass().getEnclosingClass().getName() + " : " + e.toString(), e);
+    		throw e;
+    	} catch (Error e) {
+    		rollback(connection);
+    		log.log(Level.SEVERE, new Object(){}.getClass().getEnclosingClass().getName() + " : " + e.toString(), e);
+    		throw e;
+    	} finally {
+    		close(connection);
+    	}
+
+    }
+
 }

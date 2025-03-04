@@ -14,15 +14,13 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
 
-import chapter6.beans.Message;
+import chapter6.beans.Comment;
 import chapter6.beans.User;
 import chapter6.logging.InitApplication;
-import chapter6.service.MessageService;
+import chapter6.service.CommentService;
 
-
-/*■メッセージのつぶやき機能を実装 ■*/
-@WebServlet(urlPatterns = { "/message" })
-public class MessageServlet extends HttpServlet {
+@WebServlet(urlPatterns = { "/comment" })
+public class CommentServlet extends HttpServlet {
 
     /**
     * ロガーインスタンスの生成
@@ -33,16 +31,13 @@ public class MessageServlet extends HttpServlet {
     * デフォルトコンストラクタ
     * アプリケーションの初期化を実施する。
     */
-    public MessageServlet() {
+    public CommentServlet() {
         InitApplication application = InitApplication.getInstance();
         application.init();
-
     }
 
-
-/*
- *  doPost：post呼び出しされると実行されます。
- *  入力されたつぶやきの情報をログインユーザ情報と併せてDBに登録、登録が終わるとトップ画面（top.jsp）を再表示（再読み込み）。*/
+	/* doPost：
+	 * 入力された返信の情報をログイン情報と併せてDBに登録、登録が終わるとトップ画面（top.jsp）にリダイレクト*/
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
@@ -53,26 +48,36 @@ public class MessageServlet extends HttpServlet {
         HttpSession session = request.getSession();
         List<String> errorMessages = new ArrayList<String>();
 
+        /*入力値を取得*/
         String text = request.getParameter("text");
+        int messageId = Integer.parseInt(request.getParameter("messageId"));
+
+        /*バリデーションチェック*/
         if (!isValid(text, errorMessages)) {
             session.setAttribute("errorMessages", errorMessages);
+            /*遷移先(top.jsp)でエラーメッセージを表示 */
             response.sendRedirect("./");
             return;
         }
 
-        Message message = new Message();
-        message.setText(text);
+        /*インスタンス化*/
+        Comment comment = new Comment();
 
+        /*入力値を格納*/
+        comment.setText(text);
+        comment.setMessageId(messageId);
+
+        /*ログイン情報取得、ユーザIDの格納*/
         User user = (User) session.getAttribute("loginUser");
-        message.setUserId(user.getId());
+        comment.setUserId(user.getId());
 
-        new MessageService().insert(message);
+        /*Service呼び出し*/
+        new CommentService().insert(comment);
         response.sendRedirect("./");
     }
 
- /*
-  * ②isValid：入力値に対するバリデーションを行います。
-  * 入力値が不正な場合にはトップ画面(top.jsp)を表示するようにしています。 */
+ /* isValid：バリデーションチェック
+  * 入力値が不正な場合falseをreturn*/
     private boolean isValid(String text, List<String> errorMessages) {
 
 	  log.info(new Object(){}.getClass().getEnclosingClass().getName() +
@@ -91,6 +96,3 @@ public class MessageServlet extends HttpServlet {
     }
 
 }
-
-
-/*※doGetが存在しないのは、MessageServletでは入力された情報の登録を行うのみであるため*/

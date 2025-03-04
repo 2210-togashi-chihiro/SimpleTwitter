@@ -32,6 +32,7 @@ public class MessageDao {
 
     }
 
+    /*■つぶやきの入力■*/
     public void insert(Connection connection, Message message) {
 
 	  log.info(new Object(){}.getClass().getEnclosingClass().getName() +
@@ -93,8 +94,8 @@ public class MessageDao {
     	}
     }
 
-    /*■つぶやきの編集(1つのメッセージを編集)■*/
-	public Message select(Connection connection, Integer messageId) {
+    /*■つぶやきの編集(1つのメッセージを取得)■*/
+	public Message select(Connection connection, int messageId) {
 
 		  log.info(new Object(){}.getClass().getEnclosingClass().getName() +
 	        " : " + new Object(){}.getClass().getEnclosingMethod().getName());
@@ -122,6 +123,39 @@ public class MessageDao {
 	            close(ps);
 	        }
 	}
+
+    /*■つぶやきの編集(1つのメッセージを更新)■*/
+	public void update(Connection connection, Message message) {
+
+    	log.info(new Object(){}.getClass().getEnclosingClass().getName() +
+    			" : " + new Object(){}.getClass().getEnclosingMethod().getName());
+
+    	//プリコンパイルされた SQL文を表すオブジェクト,
+    	PreparedStatement ps = null;
+    	try {
+            StringBuilder sql = new StringBuilder();
+
+    		sql.append("UPDATE messages SET ");
+    		sql.append("text = ?, ");
+    		sql.append("created_date = CURRENT_TIMESTAMP ");
+    		sql.append("WHERE id = ?");
+
+    		ps = connection.prepareStatement(sql.toString());
+
+            ps.setString(1, message.getText());
+            ps.setInt(2, message.getId());
+
+    		/*UPDATE命令を実行*/
+    		ps.executeUpdate();
+
+    	}catch (SQLException e) {
+    		log.log(Level.SEVERE, new Object(){}.getClass().getEnclosingClass().getName() + " : " + e.toString(), e);
+    		throw new SQLRuntimeException(e);
+    	} finally {
+    		close(ps);
+    	}
+    }
+
 
 	/*■編集用selectから持ってきたrsをmessageに変換するためのメソッド■*/
 	private List<Message> toMessages(ResultSet rs) throws SQLException {

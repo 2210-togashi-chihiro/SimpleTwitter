@@ -71,22 +71,39 @@
 						<span class="name"><c:out value="${message.name}" /></span>
 					</div>
 					<div class="text">
-						<c:out value="${message.text}" />
+						<pre><c:out value="${message.text}" /></pre>
 					</div>
 					<div class="date">
 						<fmt:formatDate value="${message.createdDate}"
 							pattern="yyyy/MM/dd HH:mm:ss" />
 					</div>
-					<form action="edit" method="get">
-						<input type="hidden" name="messageId" value="${message.id}">
-						<input type="submit" value="編集">
-					</form>
-					<!-- action属性でURL:deleteMessageを指定・id="deleteMessage"は一旦消し-->
-					<form action="deleteMessage" method="post">
-						<!-- name&value…キー & バリューの関係。name:user.id としてサーバーにリクエストされる ・onClick="return Check()"は一旦消し-->
-						<input name="messageId" value="${message.id}" type="hidden" />
-						<input type="submit" value="削除">
-					</form>
+					<c:if test="${ loginUser.id == message.userId}"> <!-- ログインユーザ=messageを投稿したユーザIDの場合、「編集」「削除」を表示 -->
+						<div class="edit-button">
+							<form action="edit" method="get">
+								<input type="hidden" name="messageId" value="${message.id}">
+								<input type="submit" value="編集">
+							</form>
+						</div>
+						<!-- action属性でURL:deleteMessageを指定・id="deleteMessage"は一旦消し-->
+						<div class="delete-button">
+							<form action="deleteMessage" method="post">
+								<!-- name&value…キー & バリューの関係。name:user.id としてサーバーにリクエストされる ・onClick="return Check()"は一旦消し-->
+								<input name="messageId" value="${message.id}" type="hidden" />
+								<input type="submit" value="削除">
+							</form>
+						</div>
+					</c:if>
+					<c:if test="${ isShowMessageForm }">
+						<div class="comment-form-area">
+							<form action="comment" method="post">
+								<!-- POSTするURL（action属性）にmessageを指定 -->
+								💬 reply<br />
+								<textarea name="text" cols="100" rows="5" class="tweet-box"></textarea>
+								<br /> <input type="hidden" name="messageId" value="${message.id}">
+								<input type="submit" value="返信">（140文字まで）
+							</form>
+						</div>
+					</c:if>
 				</div>
 			</c:forEach>
 		</div>
