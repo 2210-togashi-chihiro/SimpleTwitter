@@ -80,7 +80,6 @@ public class CommentService {
 
     		return comments;
 
-    	} catch (RuntimeException e) {
     		rollback(connection);
     		log.log(Level.SEVERE, new Object(){}.getClass().getEnclosingClass().getName() + " : " + e.toString(), e);
     		throw e;
