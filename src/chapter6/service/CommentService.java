@@ -75,7 +75,7 @@ public class CommentService {
     		/*Dao呼び出し*/
     		List<UserComment> comments = new UserCommentDao().select(connection, LIMIT_NUM);
 
-    		/*DBの操作を確定(commit;)*/
+    		/*DB操作を確定(commit;)*/
     		commit(connection);
 
     		return comments;

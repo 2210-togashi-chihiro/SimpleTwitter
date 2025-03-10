@@ -64,7 +64,8 @@
 				<div class="message">
 					<div class="account-name">
 						<span class="account">
-							<a href="./?user_id=<c:out value="${message.userId}"/> ">　<!-- クエリパラメータを生成 --><!-- c:outタグ：変数を出力 -->
+							<%-- <a href="./?user_id=<c:out value="${message.userId}"/> "> --%>　<!-- クエリパラメータを生成 --><!-- c:outタグ：変数を出力 -->
+							<a href="./?user_id=2">
 								<c:out value="${message.account}" />
 							</a>
 						</span>
